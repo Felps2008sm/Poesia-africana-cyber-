@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fios da Memória — Poesia Africana Digital</title>
+
+  <style>
+    :root {
+      --terra: #8f2f1d;
+      --ouro: #dcb45a;
+      --ocre: #c58b45;
+      --noite: #120d09;
+      --palha: #e5d7ae;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: var(--palha);
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at 10% 15%, rgba(220,180,90,.16), transparent 27rem),
+        radial-gradient(circle at 90% 85%, rgba(143,47,29,.26), transparent 30rem),
+        var(--noite);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .16;
+      background:
+        repeating-linear-gradient(
+          55deg,
+          transparent 0 18px,
+          rgba(220,180,90,.18) 18px 20px,
+          transparent 20px 38px
+        ),
+        repeating-linear-gradient(
+          -55deg,
+          transparent 0 18px,
+          rgba(143,47,29,.24) 18px 20px,
+          transparent 20px 38px
+        );
+    }
+
+    .page {
+      position: relative;
+      width: min(820px, 92vw);
+      height: min(600px, 82vh);
+      display: grid;
+      align-items: center;
+      padding: clamp(28px, 6vw, 72px);
+      overflow: hidden;
+      border: 1px solid rgba(220,180,90,.38);
+      border-radius: 4px;
+      background:
+        linear-gradient(rgba(18,13,9,.88), rgba(18,13,9,.92)),
+        repeating-linear-gradient(
+          0deg,
+          transparent 0 30px,
+          rgba(220,180,90,.12) 30px 31px
+        );
+      box-shadow:
+        0 24px 80px rgba(0,0,0,.58),
+        inset 0 0 60px rgba(220,180,90,.05);
+    }
+
+    .page::before,
+    .page::after {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border: 1px solid rgba(220,180,90,.25);
+      transform: rotate(45deg);
+    }
+
+    .page::before {
+      top: -110px;
+      left: -110px;
+    }
+
+    .page::after {
+      right: -110px;
+      bottom: -110px;
+    }
+
+    .title {
+      position: absolute;
+      top: 26px;
+      left: 36px;
+      color: var(--ouro);
+      font-size: clamp(10px, 1.4vw, 13px);
+      letter-spacing: .25em;
+      text-transform: uppercase;
+    }
+
+    .poem {
+      position: relative;
+      z-index: 2;
+      min-height: 390px;
+      font-size: clamp(19px, 3vw, 29px);
+      line-height: 1.75;
+      white-space: pre-wrap;
+      text-wrap: balance;
+      text-shadow: 0 3px 22px rgba(220,180,90,.1);
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      margin-left: 4px;
+      vertical-align: -.08em;
+      background: var(--ouro);
+      box-shadow: 0 0 12px var(--ouro);
+      animation: blink .75s steps(1) infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    .start,
+    .restart {
+      position: absolute;
+      z-index: 5;
+      right: 28px;
+      bottom: 22px;
+      border: 1px solid rgba(220,180,90,.4);
+      padding: 9px 13px;
+      color: var(--ouro);
+      background: rgba(18,13,9,.82);
+      font: 11px "Courier New", monospace;
+      letter-spacing: .12em;
+      cursor: pointer;
+    }
+
+    .start {
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      font-size: clamp(16px, 3vw, 24px);
+      background: rgba(18,13,9,.94);
+    }
+
+    .restart {
+      display: none;
+    }
+
+    .particle {
+      position: fixed;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      pointer-events: none;
+      background: var(--ouro);
+      box-shadow: 0 0 8px var(--ouro);
+      animation: rise 4s linear forwards;
+    }
+
+    @keyframes rise {
+      to {
+        transform: translate(var(--drift), -180px);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        height: 78vh;
+        padding: 38px 24px 58px;
+      }
+
+      .poem {
+        min-height: 420px;
+        line-height: 1.55;
+      }
+
+      .title {
+        top: 18px;
+        left: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <div class="title">Cantos do Continente / 001</div>
+
+    <button class="start" id="start" type="button">
+      TOCAR O POEMA
+    </button>
+
+    <article class="poem" aria-label="Poesia digital">
+      <span id="text"></span><span class="cursor" id="cursor"></span>
+    </article>
+
+    <button class="restart" id="restart" type="button">
+      RECOMEÇAR
+    </button>
+  </main>
+
+  <script>
+    const poem = `Minha voz vem da poeira
+que guardou milhares de caminhos.
+
+Vem dos tambores antigos,
+de rios que escreveram o mundo
+com mãos de luz e sombra.
+
+Sou palavra feita de memória:
+palavra que dança,
+palavra que acolhe,
+palavra que atravessa
+o tempo — sem se perder.
+
+Cada continente é uma voz;
+cada voz, um universo.
+
+Eu canto porque as raízes
+lembram o que o vento esquece.
+
+África não cabe em fronteiras:
+ela é chão, céu, sangue e semente —
+é o chamado
+que ainda pulsa em nós.`;
+
+    const textElement = document.getElementById("text");
+    const cursor = document.getElementById("cursor");
+    const startButton = document.getElementById("start");
+    const restartButton = document.getElementById("restart");
+
+    let timer;
+    let index = 0;
+    let audioContext;
+    let drumTimer;
+
+    function createSoundContext() {
+      audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    function playKey() {
+      if (!audioContext) return;
+
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      oscillator.type = "triangle";
+      oscillator.frequency.value = 180 + Math.random() * 180;
+
+      gain.gain.setValueAtTime(.018, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + .035);
+
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + .04);
+    }
+
+    function playDrum() {
+      if (!audioContext) return;
+
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(125, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(48, audioContext.currentTime + .16);
+
+      gain.gain.setValueAtTime(.09, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + .18);
+
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + .19);
+    }
+
+    function makeParticle() {
+      const particle = document.createElement("span");
+      particle.className = "particle";
+      particle.style.left = `${Math.random() * 100}vw`;
+      particle.style.bottom = "-10px";
+      particle.style.setProperty("--drift", `${-70 + Math.random() * 140}px`);
+      document.body.appendChild(particle);
+
+      setTimeout(() => particle.remove(), 4000);
+    }
+
+    function typeNextCharacter() {
+      if (index >= poem.length) {
+        clearInterval(timer);
+        clearInterval(drumTimer);
+        cursor.style.animationDuration = "1.2s";
+        restartButton.style.display = "block";
+        return;
+      }
+
+      const character = poem[index];
+      textElement.textContent += character;
+      index++;
+
+      playKey();
+
+      if (character === "\n") {
+        playDrum();
+      }
+
+      if (Math.random() > .82) makeParticle();
+
+      const pause = [".", ":", ";", "!", "—"].includes(character)
+        ? 260
+        : character === "\n"
+          ? 430
+          : 32 + Math.random() * 52;
+
+      clearTimeout(typeNextCharacter.nextTimer);
+      typeNextCharacter.nextTimer = setTimeout(typeNextCharacter, pause);
+    }
+
+    function startPoem() {
+      createSoundContext();
+      audioContext.resume();
+
+      startButton.style.display = "none";
+      index = 0;
+      textElement.textContent = "";
+      restartButton.style.display = "none";
+
+      playDrum();
+      drumTimer = setInterval(playDrum, 1700);
+
+      setTimeout(typeNextCharacter, 600);
+    }
+
+    startButton.addEventListener("click", startPoem);
+
+    restartButton.addEventListener("click", () => {
+      clearInterval(drumTimer);
+      startPoem();
+    });
+  </script>
+</body>
+</html>
